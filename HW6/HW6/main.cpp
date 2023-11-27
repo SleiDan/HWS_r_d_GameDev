@@ -2,45 +2,46 @@
 #include <cctype>
 
 int main() {
-    
+
     //TASK 1
-     std::cout << "TASK 1" << std::endl;
-     int a1 = 0, d = 0, a_last = 0;
-     std::cout << "Enter first number: ";
-     std::cin >> a1;
-     std::cout << "Enter step number(d): ";
-     std::cin >> d;
-     std::cout << "Enter third number: ";
-     std::cin >> a_last;
-     
-     while(a1 < a_last){
-     std::cout << a1 << " ";
-     a1 += d;
-     }
-     std::cout << std::endl;
-     
-     //TASK 2
-     std::cout << "TASK 2" << std::endl;
-     int n = 0;
-     std::cout << "Enter the number of the Fibonacci sequence element: ";
-     std::cin >> n;
-     int counter = 2;
-     int a = 1, b = 1, answer = 0;
-     while(counter != n){
-     answer = a + b;
-     a = b;
-     b = answer;
-     counter++;
-     }
-     
-     std::cout << "The value of the Fibonacci sequence element " << n << " = " << answer << std::endl;
-     std::cout << std::endl;
-    
+    std::cout << "TASK 1" << std::endl;
+    int a1 = 0, d = 0, a_last = 0;
+    std::cout << "Enter first number: ";
+    std::cin >> a1;
+    std::cout << "Enter step number(d): ";
+    std::cin >> d;
+    std::cout << "Enter position of last number: ";
+    std::cin >> a_last;
+
+    for(int i = 0; i < a_last; i++){
+        std::cout << a1 << " ";
+        a1 += d;
+    }
+    std::cout << std::endl;
+
+    //TASK 2
+    std::cout << "TASK 2" << std::endl;
+    int n = 0;
+    std::cout << "Enter the number of the Fibonacci sequence element: ";
+    std::cin >> n;
+
+    int a = 1, b = 1, answer = 0;
+
+    for (int counter = 2; counter != n; ++counter) {
+        answer = a + b;
+        a = b;
+        b = answer;
+    }
+
+    std::cout << "The value of the Fibonacci sequence element " << n << " = " << answer << std::endl;
+    std::cout << std::endl;
+
+
     //TASK 3
     std::cout << "TASK 3" << std::endl;
     int num = 0;
     bool validInput = false;
-    
+
     do {
         std::cout << "Please enter a positive integer number: ";
         std::cin >> num;
@@ -57,12 +58,13 @@ int main() {
     } while (!validInput);
     //Стало ну очень интересно как сделать такую проверку)
     long long ans = 1; //long long для макс факториала = 25!
-    for(int i = 1; i < num; i++){
-        ans *= i + 1;
+    for(int i = 2; i <= num; i++){
+        ans *= i;
     }
+    //I used to add one cuz my 'for' was starting from * 1 and ending with * 4, now it's working without +1
     std::cout << num << "! = " << ans << std::endl;
     std::cout << std::endl;
-    
+
     //TASK 4
     std::cout << "TASK 4" << std::endl;
     int length_of_lines;
@@ -119,26 +121,20 @@ int main() {
     // e.
     std::cout << "e." << std::endl;
     for (int i = 1; i <= num_of_rows; ++i) {
-        if (i % 2 == 1){
-          for (int j = 1; j <= i; ++j) {
-            std::cout << (j % 2);
-          }
-          std::cout << std::endl;
-        }else{
-          for (int j = 1; j <= i; ++j) {
-            std::cout << ((j + 1) % 2);
-          }
-          std::cout << std::endl;
+        for (int j = 1; j <= i; ++j) {
+            std::cout << (i % 2 == 1 ? j % 2 : (j + 1) % 2);
         }
-      }
-      std::cout << std::endl;
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+
 
 
     //TASK 5
     std::cout << "TASK 5" << std::endl;
     char character;
     int sumOfCharacters = 0;
-    
+
     do{
         std::cout << "Enter character (enter '.' to end programm): ";
         std::cin >> character;
@@ -153,6 +149,6 @@ int main() {
             std::cout << "The character is not processed by the program." << std::endl;
         }
     }while (character != '.');
-    
+
     std::cout << "The program is complete" << std::endl;
 }
