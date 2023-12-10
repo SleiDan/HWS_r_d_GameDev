@@ -12,18 +12,17 @@ int factorialA(int count){
 
 void printNaturalNumbersC(int count){
     if(count == 0){
-        std::cout << std::endl;
         return;
     }
     std::cout << count << " ";
     printNaturalNumbersC(count - 1);
 }
 
-void printNaturalNumbersD(int count, int num){
-    if(num > count){
+void printNaturalNumbersD(int count) {
+    if (count > 0) {
+        printNaturalNumbersD(count - 1);
+        std::cout << count << " ";
+    } else {
         std::cout << std::endl;
-        return;
     }
-    std::cout << num << " ";
-    printNaturalNumbersD(count, num+1);
 }

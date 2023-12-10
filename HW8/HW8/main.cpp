@@ -23,6 +23,6 @@ int main() {
     printNaturalNumbersB(count2);
     std::cout << "With recursion: " << std::endl;
     printNaturalNumbersC(count2);
-    printNaturalNumbersD(count2, 1);
-    
+    printNaturalNumbersD(count2);
+    std::cout << std::endl;
 }

@@ -1,11 +1,7 @@
-// recursive_functions.h
-#ifndef RECURSIVE_FUNCTIONS_H
-#define RECURSIVE_FUNCTIONS_H
+#pragma once
 
 int factorialA(int count);
 
 void printNaturalNumbersC(int count);
 
-void printNaturalNumbersD(int count, int num);
-
-#endif // RECURSIVE_FUNCTIONS_H
+void printNaturalNumbersD(int count);

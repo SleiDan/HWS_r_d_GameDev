@@ -22,7 +22,7 @@ void num_of_nums(int a){
 
 int factorialB(int count){
     int result = 1;
-        for (int i = 1; i <= count; ++i) {
+        for (int i = 2; i <= count; ++i) {
             result *= i;
         }
         return result;
@@ -30,7 +30,7 @@ int factorialB(int count){
 
 
 void printNaturalNumbersA(int count){
-    for(int i = count; i != 0; i--){
+    for(int i = count; i > 0; i--){
         std::cout << i << " ";
     }
     std::cout << std::endl;
