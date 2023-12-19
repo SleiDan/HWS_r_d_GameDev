@@ -31,3 +31,14 @@
    - Parameters:
      - `words`: The array to delete.
      - `wordCount`: The number of words in the array.
+
+### Algorithm
+
+The core algorithm involves comparing the player's input with the target word and providing feedback. Here's how it works:
+
+1. The program selects a word from the chosen mode (daily, random, or test cases).
+2. The player enters a word guess.
+3. The program compares each letter of the guess with the corresponding letter in the target word.
+4. If a letter matches, it is revealed in the result.
+5. If a letter is in the correct position, it is displayed in uppercase.
+6. The player continues guessing until the word is correctly identified or the maximum attempts are reached.
