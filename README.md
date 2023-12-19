@@ -1,5 +1,5 @@
 # HWS_r_d_GameDev
-#### Key Functions and Modules
+### Key Functions and Modules
 
 1. **`compareAndUpdateResult`**
    - Description: Compares the player's input word with the target word and updates the displayed result.
@@ -42,3 +42,17 @@ The core algorithm involves comparing the player's input with the target word an
 4. If a letter matches, it is revealed in the result.
 5. If a letter is in the correct position, it is displayed in uppercase.
 6. The player continues guessing until the word is correctly identified or the maximum attempts are reached.
+
+### Screenshots
+#### Testcases
+1. **`HELLO`**
+   ![Test case HELLO](screenshots/hello.png)
+2. **`COCON`**
+   ![Test case COCON](screenshots/cocon.png)
+3. **`SPEAK`**
+   ![Test case SPEAK](screenshots/speak.png)
+#### Wordle of the day work
+1. **`Before restart of programm`**
+   ![Test case HELLO](screenshots/before.png)
+2. **`After restart of programm`**
+   ![Test case COCON](screenshots/after.png)
