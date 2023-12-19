@@ -46,13 +46,13 @@ The core algorithm involves comparing the player's input with the target word an
 ### Screenshots
 #### Testcases
 1. **`HELLO`**
-   ![Test case HELLO](screenshots/hello.png)
+   ![Test case HELLO](Workshop_2/Workshop_2/screenshots/hello.png)
 2. **`COCON`**
-   ![Test case COCON](screenshots/cocon.png)
+   ![Test case COCON](Workshop_2/Workshop_2/screenshots/cocon.png)
 3. **`SPEAK`**
-   ![Test case SPEAK](screenshots/speak.png)
+   ![Test case SPEAK](Workshop_2/Workshop_2/screenshots/speak.png)
 #### Wordle of the day work
 1. **`Before restart of programm`**
-   ![Test case HELLO](screenshots/before.png)
+   ![Test case HELLO](Workshop_2/Workshop_2/screenshots/before.png)
 2. **`After restart of programm`**
-   ![Test case COCON](screenshots/after.png)
+   ![Test case COCON](Workshop_2/Workshop_2/screenshots/after.png)
