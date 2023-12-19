@@ -44,15 +44,20 @@ The core algorithm involves comparing the player's input with the target word an
 6. The player continues guessing until the word is correctly identified or the maximum attempts are reached.
 
 ### Screenshots
+
 #### Testcases
 1. **`HELLO`**
    ![Test case HELLO](Workshop_2/Workshop_2/screenshots/hello.png)
+
 2. **`COCON`**
    ![Test case COCON](Workshop_2/Workshop_2/screenshots/cocon.png)
+
 3. **`SPEAK`**
    ![Test case SPEAK](Workshop_2/Workshop_2/screenshots/speak.png)
+
 #### Wordle of the day work
 1. **`Before restart of programm`**
    ![Test case HELLO](Workshop_2/Workshop_2/screenshots/before.png)
+
 2. **`After restart of programm`**
    ![Test case COCON](Workshop_2/Workshop_2/screenshots/after.png)
