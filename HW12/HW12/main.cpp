@@ -54,19 +54,13 @@ void quickSort(int array[], int low, int high)
     }
 }
 
-void quickSort2(int* arrayBeg, int* arrayEnd)
-{
-    const int size = arrayEnd - arrayBeg;
-    quickSort(arrayBeg, 0, size - 1);
-}
-
 void sort(int arr[ROWS][COLUMNS], SortingDirection direction)
 {
     if (direction == SortingDirection::ByRows)
     {
         for (int i = 0; i < ROWS; ++i)
         {
-            quickSort2(arr[i], arr[i] + COLUMNS);
+            quickSort(arr[i], 0, COLUMNS - 1);
         }
     }
     else if (direction == SortingDirection::ByColumns)
