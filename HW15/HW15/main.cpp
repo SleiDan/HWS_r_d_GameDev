@@ -1,18 +1,20 @@
 #include <iostream>
 #include <algorithm>
 
+const int numOfMarks = 4;  // Constant for marks size
+
 struct Student {
     std::string name;
-    int marks[4];
+    int marks[numOfMarks];
 };
 
 // Function to calculate the average grade of a student
 float calculateAverage(const Student& student) {
     int sum = 0;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < numOfMarks; ++i) {
         sum += student.marks[i];
     }
-    return static_cast<float>(sum) / 4.0f;
+    return static_cast<float>(sum) / numOfMarks;
 }
 
 // Function to sort an array of students by their average grade
@@ -25,16 +27,29 @@ void sortStudentsByAverage(Student students[], int size) {
 // Function to return a pointer to the top-performing student in the array
 const Student* getTopStudent(const Student students[], int size) {
     if (size > 0) {
-        return &students[0];
+        const Student* topStudent = &students[0];
+        float maxAverage = calculateAverage(students[0]);
+
+        for (int i = 1; i < size; ++i) {
+            float currentAverage = calculateAverage(students[i]);
+            if (currentAverage > maxAverage) {
+                topStudent = &students[i];
+                maxAverage = currentAverage;
+            }
+        }
+
+        return topStudent;
     }
+
     return nullptr;
 }
+}
 
-// Function to count the number of students with an average grade above 75%
-int countStudentsAbove75(const Student students[], int size) {
+// Function to count the number of students with an average grade above a specified threshold
+int countStudentsAboveThreshold(const Student students[], int size, float threshold) {
     int count = 0;
     for (int i = 0; i < size; ++i) {
-        if (calculateAverage(students[i]) > 75.0f) {
+        if (calculateAverage(students[i]) > threshold) {
             ++count;
         }
     }
@@ -71,7 +86,7 @@ int main() {
     }
 
     // Count the number of students with an average above 75%
-    int countAbove75 = countStudentsAbove75(students, numberOfStudents);
+    int countAbove75 = countStudentsAboveThreshold(students, numberOfStudents, 75.0f);
     std::cout << "\nNumber of students with an average above 75%: " << countAbove75 << "\n";
 
     return 0;
