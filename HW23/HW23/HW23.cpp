@@ -131,7 +131,7 @@ int main()
 
     node1->next = node2;
     node2->next = node3;
-    node3->next = node1; // Cycle is formed
+    node3->next = node1; //OOPS, cycle is formed
 
     std::cout << "Cycle is present: " << (has_cycle(node1) ? "Yes" : "No") << std::endl;
 
@@ -139,11 +139,10 @@ int main()
     delete node1;
     delete node2;
     delete node3;
-    std::string line1 = "Hello Hey Hello Bye Hey";
-    std::cout << "Unique words count: " << uniqueWordsCount(line1) << std::endl;
+    std::string line = "Hello Hey Hello Bye Hey";
+    std::cout << "Unique words count: " << uniqueWordsCount(line) << std::endl;
 
-    std::string line2 = "Hello Hey Hello Bye Hey";
-    std::cout << "Most occurred word: " << mostOccuredWord(line2) << std::endl;
+    std::cout << "Most occurred word: " << mostOccuredWord(line) << std::endl;
 
     std::string line3 = "{ [()][ ] }()";
     std::cout << "Parentheses balanced? " << (areParenthesesBalanced(line3) ? "Yes" : "No") << std::endl;
