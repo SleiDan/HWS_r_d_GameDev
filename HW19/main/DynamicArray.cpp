@@ -1,6 +1,8 @@
 #include "DynamicIntArray.h"
 #include <iostream>
 
+
+
 int main() {
     // Test default constructor
     DynamicIntArray arr1;
@@ -20,13 +22,25 @@ int main() {
     std::cout << "Operator= - Size: " << arr4.getSize() << std::endl;
 
     // Test operator[]
-    arr4[29] = 42;
+    arr4[2] = 42;
     std::cout << "Value at index 2: " << arr4[2] << std::endl;
 
+    std::cout << "Array:";
+    for (std::size_t i = 0; i < arr4.getSize(); ++i) {
+        std::cout << " " << arr4[i];
+    }
+    std::cout << std::endl;
+    
     // Test setSize
     arr4.setSize(8);
     std::cout << "After setSize - New size: " << arr4.getSize() << std::endl;
-
+    
+    std::cout << "Array:";
+    for (std::size_t i = 0; i < arr4.getSize(); ++i) {
+        std::cout << " " << arr4[i];
+    }
+    std::cout << std::endl;
+    
     // Test push_back
     arr4.push_back(99);
     std::cout << "After push_back - New size: " << arr4.getSize() << std::endl;

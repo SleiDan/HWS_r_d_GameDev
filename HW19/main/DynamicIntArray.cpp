@@ -34,10 +34,16 @@ int& DynamicIntArray::operator[](std::size_t index) {
 }
 
 void DynamicIntArray::setSize(std::size_t newSize) {
+    int* newData = new int[newSize];
+    std::size_t copySize = std::min(size, newSize);
+    for (std::size_t i = 0; i < copySize; ++i) {
+        newData[i] = data[i];
+    }
     delete[] data;
     size = newSize;
-    data = new int[size];
+    data = newData;
 }
+
 
 std::size_t DynamicIntArray::getSize() const {
     return size;
