@@ -82,20 +82,28 @@ T& DynamicArray<T>::operator[](std::size_t index)
 template <typename T>
 void DynamicArray<T>::push_back(const T& element)
 {
-    // Allocate new memory for the larger container
-    T* new_array = new T[size + 1];
+    if (size + 1 > capacity) {
+        // Allocate new memory for the larger container
+        T* new_array = new T[size + 1];
 
-    // Copy old elements to the new array
-    std::copy(array, array + size, new_array);
+        // Copy old elements to the new array
+        std::copy(array, array + size, new_array);
 
-    // Insert the new element at the last index
-    new_array[size] = element;
+        // Insert the new element at the last index
+        new_array[size] = element;
 
-    // Deallocate the old memory
-    delete[] array;
+        // Deallocate the old memory
+        delete[] array;
 
-    // Update data pointer to the new array
-    array = new_array;
+        // Update data pointer to the new array
+        array = new_array;
+
+        // Update capacity
+        capacity = size + 1;
+    } else {
+        // Insert the new element at the last index
+        array[size] = element;
+    }
 
     // Update size
     size++;
@@ -168,3 +176,42 @@ void DynamicArray<T>::shrinkToFit()
     // Update capacity to match the size
     capacity = size;
 }
+
+template <typename T>
+DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& other) {
+    if (this != &other) { // Self-assignment check
+        // Deallocate existing memory
+        delete[] array;
+
+        // Copy size and capacity
+        size = other.size;
+        capacity = other.capacity;
+
+        // Allocate new memory and copy elements
+        array = new T[capacity];
+        std::copy(other.array, other.array + size, array);
+    }
+    return *this;
+}
+
+template <typename T>
+bool DynamicArray<T>::operator==(const DynamicArray<T>& other) const {
+    if (size != other.size) {
+        return false;
+    }
+    for (std::size_t i = 0; i < size; ++i) {
+        if (array[i] != other.array[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename T>
+void DynamicArray<T>::clear() {
+    delete[] array;
+    array = nullptr;
+    size = 0;
+    capacity = 0;
+}
+

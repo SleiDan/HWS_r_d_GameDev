@@ -1,14 +1,13 @@
 #include <iostream>
 #include "DynamicArray.h"
 
-int main()
-{
+int main() {
     DynamicArray<int> m_container;
     m_container.reserve(4);
-    m_container.push_back(25); // No new heap allocations, using reserved memory
-    m_container.push_back(30); // No new heap allocations, using reserved memory
-    m_container.push_back(10); // No new heap allocations, using reserved memory
-    m_container.push_back(39); // No new heap allocations, using reserved memory
+    m_container.push_back(25);
+    m_container.push_back(30);
+    m_container.push_back(10);
+    m_container.push_back(39);
 
     std::cout << "Current size: " << m_container.getSize() << std::endl;
     std::cout << "Current capacity: " << m_container.getCapacity() << std::endl;
@@ -31,7 +30,7 @@ int main()
     std::cout << std::endl;
 
     // Testing reserve() and getCapacity()
-    m_container.reserve(8); // Allocate more memory
+    m_container.reserve(8);
     std::cout << "Current size after reserve(): " << m_container.getSize() << std::endl;
     std::cout << "Current capacity after reserve(): " << m_container.getCapacity() << std::endl;
     std::cout << "Array content: ";
@@ -50,17 +49,24 @@ int main()
     }
     std::cout << std::endl;
 
-    // OOPS, 5th element was added
-    // allocate more memory on heap
-    m_container.push_back(55);
-
-    std::cout << "Current size after pushing 55: " << m_container.getSize() << std::endl;
-    std::cout << "Current capacity after pushing 55: " << m_container.getCapacity() << std::endl;
-    std::cout << "Array content: ";
-    for (std::size_t i = 0; i < m_container.getSize(); ++i) {
-        std::cout << m_container[i] << " ";
+    // Testing assignment operator and clear method
+    DynamicArray<int> m_copy;
+    m_copy = m_container;
+    std::cout << "Copied array content: ";
+    for (std::size_t i = 0; i < m_copy.getSize(); ++i) {
+        std::cout << m_copy[i] << " ";
     }
     std::cout << std::endl;
+
+    m_copy.clear();
+    std::cout << "After clearing, size: " << m_copy.getSize() << ", capacity: " << m_copy.getCapacity() << std::endl;
+
+    // Testing equality operator
+    if (m_container == m_copy) {
+        std::cout << "m_container and m_copy are equal." << std::endl;
+    } else {
+        std::cout << "m_container and m_copy are not equal." << std::endl;
+    }
 
     return 0;
 }
