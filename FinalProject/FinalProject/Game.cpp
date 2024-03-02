@@ -152,6 +152,10 @@ void Game::renderGameOverMessage() {
     window.draw(gameOverText);
 }
 
+float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
+    return std::sqrt(std::pow(pos2.x - pos1.x, 2) + std::pow(pos2.y - pos1.y, 2));
+}
+
 void Game::updateGameLogic() {
     // Handle player movement
     sf::Vector2f movement(0.f, 0.f);
@@ -198,6 +202,19 @@ void Game::updateGameLogic() {
                 // Increment the hit count on the enemy
                 enemy.incrementHitCount();
                 bulletHitEnemy = true; // Set the flag to indicate bullet hit an enemy
+                if (enemy.getHitCount() >= 2) {
+                    // If the enemy is killed, add experience to the player
+                    player.addExp(enemy.getExpForKilling());
+                    if (player.getExp() >= player.getExpForNewLvl())
+                    {
+                        //gameState = GameState::NewLvl;
+                        int newExp = player.getExp() - player.getExpForNewLvl();
+                        player.setExpForNewLvl(player.getExpForNewLvl() + 100);
+                        player.setExp(newExp);                        
+                    }
+                    // Optionally, you can also remove the enemy from the list here
+                    enemies.erase(std::remove(enemies.begin(), enemies.end(), enemy), enemies.end());
+                }
                 break; // Exit the loop as the bullet has hit an enemy
             }
         }
@@ -209,6 +226,7 @@ void Game::updateGameLogic() {
             bulletIt = bullets.erase(bulletIt); // Remove the bullet as it hit an enemy
         }
     }
+
 
     for (auto enemy : enemies)
     {
@@ -227,11 +245,6 @@ void Game::updateGameLogic() {
         }
     }
 
-    // Remove enemies whose hit count has reached two
-    enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& enemy) {
-        return enemy.getHitCount() >= 2;
-    }), enemies.end());
-
     // Handle shooting and spawning
     timeSinceLastShot += shootingClock.restart();
 
@@ -244,9 +257,10 @@ void Game::updateGameLogic() {
     timeSinceLastSpawn += spawningClock.restart();
 
     //Enemies
-    if (timeSinceLastSpawn >= spawnEnemyInterval) {
-        float radius = randomInRange(700.f, 1000.f); // Радиус "бублика"
-        float angle = randomAngle(); // Случайный угол в радианах
+    //Enemies
+    if (timeSinceLastSpawn >= spawnEnemyInterval && enemies.size() < 10) {
+        float radius = randomInRange(700.f, 1000.f);
+        float angle = randomAngle();
         float offsetX = radius * std::cos(angle);
         float offsetY = radius * std::sin(angle);
 
@@ -255,11 +269,25 @@ void Game::updateGameLogic() {
         timeSinceLastSpawn = sf::Time::Zero;
     }
 
+
     // Move bullets
     for (auto& bullet : bullets) {
         bullet.move();
     }
+
+    for (auto it = bullets.begin(); it != bullets.end();) {
+        it->move();
+        if (calculateDistance(player.getShape().getPosition(), it->getShape().getPosition()) > 1100) {
+            it = bullets.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
 }
+
+
+
 
 // Function to update game logic
 void Game::update() {

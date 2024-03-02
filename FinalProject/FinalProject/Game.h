@@ -9,7 +9,8 @@
 enum class GameState {
     Running,
     Paused,
-    PlayerDead
+    PlayerDead,
+    NewLvl
 };
 
 
