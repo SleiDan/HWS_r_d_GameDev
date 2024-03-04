@@ -170,6 +170,9 @@ void Game::handleUserInput() {
 }
 
 void Game::renderPausedText() {
+    sf::Vector2f viewCenter = view.getCenter();
+    sf::FloatRect textBounds = pausedText.getLocalBounds();
+    pausedText.setPosition(viewCenter.x - textBounds.width / 2, viewCenter.y - textBounds.height / 2);
     window.draw(pausedText);
 }
 
@@ -231,6 +234,9 @@ void Game::restartGame() {
 }
 
 void Game::renderGameOverMessage() {
+    sf::Vector2f viewCenter = view.getCenter();
+    sf::FloatRect textBounds = gameOverText.getLocalBounds();
+    gameOverText.setPosition(viewCenter.x - textBounds.width / 2, viewCenter.y - textBounds.height / 2);
     window.draw(gameOverText);
 }
 
@@ -441,8 +447,6 @@ void Game::updateGameLogic(float deltaSeconds) {
 
 // Function to update game logic
 void Game::update(float deltaSeconds) {
-    pausedText.setPosition(player.getSprite().getPosition());
-    gameOverText.setPosition(player.getSprite().getPosition());
 
     switch (gameState) {
     case GameState::MainMenu:
