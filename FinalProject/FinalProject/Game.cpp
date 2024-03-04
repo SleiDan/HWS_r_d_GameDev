@@ -436,7 +436,7 @@ void Game::updateGameLogic(float deltaSeconds) {
 
     for (auto it = bullets.begin(); it != bullets.end();) {
         it->move();
-        if (calculateDistance(player.getSprite().getPosition(), it->getShape().getPosition()) > 1100) {
+        if (calculateDistance(player.getSprite().getPosition(), it->getShape().getPosition()) > 1700) {
             it = bullets.erase(it);
         } else {
             ++it;
