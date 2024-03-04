@@ -1,5 +1,6 @@
 ﻿#include "Bullet.h"
 #include <cmath>
+#include <iostream>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -24,3 +25,4 @@ const sf::RectangleShape& Bullet::getShape() const {
 bool Bullet::intersects(const sf::ConvexShape& enemyShape) const {
     return shape.getGlobalBounds().intersects(enemyShape.getGlobalBounds());
 }
+

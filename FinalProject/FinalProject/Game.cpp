@@ -33,7 +33,7 @@ Game::Game()
 
     // Load font
     if (!font.loadFromFile("arial.ttf")) {
-        std::cerr << "Could not load player texture" << std::endl;
+        std::cerr << "Could not load font" << std::endl;
     }
     
     // Configure paused text
@@ -50,9 +50,25 @@ Game::Game()
     gameOverText.setCharacterSize(50);
     gameOverText.setFillColor(sf::Color::Black);
     gameOverText.setStyle(sf::Text::Bold);
-    gameOverText.setOrigin(pausedText.getLocalBounds().width / 2.f, pausedText.getLocalBounds().height / 2.f);
+    gameOverText.setOrigin(gameOverText.getLocalBounds().width / 2.f, gameOverText.getLocalBounds().height / 2.f);
     gameOverText.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
 
+    hpText.setFont(font);
+    hpText.setString(std::to_string(player.getHP()) + "/100");
+    hpText.setCharacterSize(20);
+    hpText.setFillColor(sf::Color::Black);
+    hpText.setStyle(sf::Text::Bold);
+    hpText.setOrigin(hpText.getLocalBounds().width / 2.f, hpText.getLocalBounds().height / 2.f);
+    hpText.setPosition(85, 60);
+
+    expText.setFont(font);
+    expText.setString(std::to_string(static_cast<int>(player.getExp())) + "/" + std::to_string(static_cast<int>(player.getExpForNewLvl())));
+    expText.setCharacterSize(20);
+    expText.setFillColor(sf::Color::Black);
+    expText.setStyle(sf::Text::Bold);
+    expText.setOrigin(expText.getLocalBounds().width / 2.f, expText.getLocalBounds().height / 2.f);
+    expText.setPosition(85, 180);
+    
     initializeHpProgressBar();
     initializeExpProgressBar();
 }
@@ -61,7 +77,10 @@ Game::Game()
 void Game::run() {
     GameState gameState = GameState::Running;
     while (window.isOpen()) {
-        update(); // Update game logic
+        sf::Time deltaTime = deltaClock.restart(); // Перезапустите таймер и сохраните дельту времени
+        float deltaSeconds = deltaTime.asSeconds(); // Преобразование в секунды
+
+        update(deltaSeconds); // Обновите игру, передавая дельту времени
         renderGameObjects(); // Render the game state
     }
 }
@@ -80,14 +99,12 @@ void Game::initializeHpProgressBar() {
 }
 
 void Game::updateExpProgressBar() {
-    progressExpBar.setSize(sf::Vector2f(player.getExp()*5, 30));
+    progressExpBar.setSize(sf::Vector2f((player.getExp()/player.getExpForNewLvl())*500.f, 30));
 }
 
-void Game::updateExpProgressBarBlack()
-{
-    progressExpBarBlack.setSize(sf::Vector2f(player.getExpForNewLvl()*5, 30));
+void Game::updateExpProgressBarBlack(){
+    progressExpBarBlack.setSize(sf::Vector2f(500, 30));
 }
-
 
 void Game::initializeExpProgressBar() {
     progressExpBar.setSize(sf::Vector2f(player.getExp()*5, 30));
@@ -98,9 +115,6 @@ void Game::initializeExpProgressBar() {
     progressExpBarBlack.setFillColor(sf::Color::Black);
 
 }
-
-
-
 
 // Function to create the background grid
 void Game::createBackground() {
@@ -164,24 +178,17 @@ void Game::handlePlayerDeadInput() {
 }
 
 void Game::restartGame() {
-    // Сброс состояния игрока
-    player.setHP(100); // предполагается, что у вас есть метод setHP и переменная initialHP
-    player.getSprite().setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f); // Возвращает игрока в начальную позицию
+    player.setHP(100);
+    player.getSprite().setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
 
-    // Очистка списков врагов и пуль
     enemies.clear();
     bullets.clear();
 
-    // Сброс таймеров
     timeSinceLastShot = sf::Time::Zero;
     timeSinceLastSpawn = sf::Time::Zero;
 
-    // Возможно, вам понадобится сбросить другие аспекты игры, такие как счетчик очков или уровень
-
-    // Возвращение в игровой режим
     gameState = GameState::Running;
 
-    // Сброс камеры/вида, если необходимо
     sf::Vector2f viewCenter(window.getSize().x / 2.f, window.getSize().y / 2.f);
     view.setCenter(viewCenter);
 
@@ -195,7 +202,7 @@ float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
     return std::sqrt(std::pow(pos2.x - pos1.x, 2) + std::pow(pos2.y - pos1.y, 2));
 }
 
-void Game::updateGameLogic() {
+void Game::updateGameLogic(float deltaSeconds) {
     // Handle player movement
     sf::Vector2f movement(0.f, 0.f);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -207,26 +214,37 @@ void Game::updateGameLogic() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         movement.x += 1.f;
 
+    // Normalize the movement vector to ensure consistent speed in all directions
+    if (movement.x != 0.f || movement.y != 0.f) {
+        movement /= std::sqrt(movement.x * movement.x + movement.y * movement.y);
+    }
 
     // Move and rotate the player
-    player.move(normalize(movement));
-    player.rotate(window, sf::Mouse::getPosition(window));
-    
+    const float speed = 50.f; // Assume 200 pixels per second
+    sf::Vector2f adjustedMovement = movement * speed * deltaSeconds; // Adjust movement
+
+    player.move(adjustedMovement); // Move player with adjusted movement
+
+    // Rotate player to face the mouse cursor
+    sf::Vector2f mousePositionInWorld = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    player.rotate(mousePositionInWorld);
+
     // Keep the player within the game field bounds
     sf::Vector2f playerPos = player.getSprite().getPosition();
     sf::Vector2f viewSize = window.getView().getSize();
     float halfViewWidth = viewSize.x / 2.f;
     float halfViewHeight = viewSize.y / 2.f;
+
+    // Adjust view center considering the game field bounds
     sf::Vector2f viewCenter = view.getCenter();
     viewCenter.x = std::max(halfViewWidth, std::min(playerPos.x, fieldSize.x - halfViewWidth));
     viewCenter.y = std::max(halfViewHeight, std::min(playerPos.y, fieldSize.y - halfViewHeight));
     view.setCenter(viewCenter);
-    
-    // Adjust the view size
+
+    // Adjust the view size based on the window size
     sf::Vector2u windowSize = window.getSize();
     view.setSize(viewSize.x, viewSize.x * (static_cast<float>(windowSize.y) / windowSize.x));
-
-    
+    window.setView(view);
     
     // Move enemies towards the player
     for (auto& enemy : enemies) {
@@ -250,7 +268,8 @@ void Game::updateGameLogic() {
                         int newExp = player.getExp() - player.getExpForNewLvl();
                         player.setExpForNewLvl(player.getExpForNewLvl() + 100);
                         player.setExp(newExp);
-                        player.setAttackSpeed(0.1f);
+                        player.setAttackSpeed(0.2f);
+                        updateExpProgressBar();
                         updateExpProgressBarBlack();
                         
                     }
@@ -268,7 +287,6 @@ void Game::updateGameLogic() {
             bulletIt = bullets.erase(bulletIt); // Remove the bullet as it hit an enemy
         }
     }
-
 
     for (auto enemy : enemies)
     {
@@ -292,9 +310,10 @@ void Game::updateGameLogic() {
     timeSinceLastShot += shootingClock.restart();
 
     //Bullets
-    if (timeSinceLastShot >= shootInterval) {
+    if (timeSinceLastShot >= sf::seconds(player.getAttackSpeed())) {
         bullets.emplace_back(player.getSprite().getPosition(), player.getSprite().getRotation());
         timeSinceLastShot = sf::Time::Zero;
+        player.playSoundShot();
     }
 
     timeSinceLastSpawn += spawningClock.restart();
@@ -310,7 +329,6 @@ void Game::updateGameLogic() {
         enemies.emplace_back(enemyPosition);
         timeSinceLastSpawn = sf::Time::Zero;
     }
-
 
     // Move bullets
     for (auto& bullet : bullets) {
@@ -332,12 +350,13 @@ void Game::updateGameLogic() {
 
 
 // Function to update game logic
-void Game::update() {
+void Game::update(float deltaSeconds) {
 
     switch (gameState) {
     case GameState::Running:
         handleUserInput();
-        updateGameLogic();
+        player.updateAnimation();
+        updateGameLogic(deltaSeconds);
         renderGameObjects();
 
         break;
@@ -377,9 +396,15 @@ void Game::renderGameObjects() {
     if (gameState == GameState::Paused) {
         window.draw(pausedText);
     }
+
+    
     
     window.setView(view);
     window.setView(uiView);
+    hpText.setString(std::to_string(player.getHP()) + "/100");
+    window.draw(hpText);
+    expText.setString(std::to_string(static_cast<int>(player.getExp())) + "/" + std::to_string(static_cast<int>(player.getExpForNewLvl())));
+    window.draw(expText);    
     window.draw(progressHpBarBlack);
     window.draw(progressHpBar);
     window.draw(progressExpBarBlack);
@@ -388,6 +413,7 @@ void Game::renderGameObjects() {
     window.display(); // Display the rendered frame    window.display(); // Display the rendered frame
     
 }
+
 
 // Function to normalize a vector
 sf::Vector2f Game::normalize(const sf::Vector2f& vector) {

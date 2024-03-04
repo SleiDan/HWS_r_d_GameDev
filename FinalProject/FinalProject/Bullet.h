@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
 
 class Bullet {
 public:
@@ -11,6 +13,9 @@ public:
     const sf::RectangleShape& getShape() const;
 
     bool intersects(const sf::ConvexShape& enemyShape) const;
+
+    void playSoundShot();
+    
 
 private:
     sf::RectangleShape shape;

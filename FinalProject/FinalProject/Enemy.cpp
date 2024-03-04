@@ -2,7 +2,7 @@
 #include <cmath>
 
 Enemy::Enemy(const sf::Vector2f& position)
-    : speed(2.f) {
+    : speed(4.f) {
     shape.setPointCount(3);
     shape.setPoint(0, sf::Vector2f(0.f, 0.f));
     shape.setPoint(1, sf::Vector2f(50.f, 0.f));
