@@ -29,6 +29,4 @@ const sf::Shape& TriangleEnemy::getShape() const {
 
 void TriangleEnemy::update(const sf::Vector2f& playerPosition, float deltaTime) {
     move(playerPosition); // Call the move function to update position
-    
-    // Additional update logic (e.g., animations, attacking) goes here
 }

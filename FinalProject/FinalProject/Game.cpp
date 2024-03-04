@@ -171,13 +171,13 @@ void Game::handlePlayerDeadInput() {
     while (window.pollEvent(event)) {
         switch (event.type) {
         case sf::Event::Closed:
-            window.close(); // Закрытие окна при нажатии на крестик
+            window.close();
             break;
         case sf::Event::KeyPressed:
             if (event.key.code == sf::Keyboard::Escape)
-                window.close(); // Закрытие окна при нажатии на Escape
+                window.close();
             else if (event.key.code == sf::Keyboard::R)
-                restartGame(); // Перезапуск игры при нажатии на R
+                restartGame();
             break;
         default:
             break;
@@ -215,13 +215,12 @@ void Game::addEnemyBullet(const Bullet& bullet) {
 }
 
 void Game::updateGameLogic(float deltaSeconds) {
-    // После проверки на окончание музыки в функции update()
     if (bgMusic.getStatus() == sf::Music::Stopped) {
-        currentMusicIndex = (currentMusicIndex + 1) % musicPaths.size(); // Переход к следующей песне в круговом порядке
+        currentMusicIndex = (currentMusicIndex + 1) % musicPaths.size();
         if (!bgMusicBuffer.loadFromFile(musicPaths[currentMusicIndex])) {
             std::cerr << "Could not load background music" << std::endl;
         }
-        bgMusic.play(); // Начать воспроизведение новой песни
+        bgMusic.play();
     }
 
     // Handle player movement
@@ -478,7 +477,7 @@ void Game::renderGameObjects() {
     window.draw(progressExpBarBlack);
     window.draw(progressExpBar);
     window.setView(view);
-    window.display(); // Display the rendered frame    window.display(); // Display the rendered frame
+    window.display(); // Display the rendered frame 
     
 }
 

@@ -36,8 +36,8 @@ void CircleEnemy::update(const sf::Vector2f& playerPosition, float deltaTime) {
     
     shootTimer -= deltaTime;
     if (shootTimer <= 0) {
-        shoot(playerPosition); // Стреляем в игрока
-        shootTimer = shootInterval; // Сбрасываем таймер
+        shoot(playerPosition);
+        shootTimer = shootInterval;
     }
 }
 
