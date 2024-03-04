@@ -9,8 +9,7 @@
 enum class GameState {
     Running,
     Paused,
-    PlayerDead,
-    NewLvl
+    PlayerDead
 };
 
 
@@ -29,7 +28,7 @@ private:
     sf::Clock spawningClock;
     sf::Clock hittingClock;
     sf::Time timeSinceLastShot = sf::Time::Zero;
-    const sf::Time shootInterval = sf::seconds(0.5f);
+    const sf::Time shootInterval = sf::seconds(player.getAttackSpeed());
     std::vector<sf::RectangleShape> background;
     sf::Vector2f fieldSize;
     sf::View view;
@@ -41,6 +40,13 @@ private:
     sf::Text gameOverText;
     sf::Time timeSinceLastHit = sf::Time::Zero;
     const sf::Time hitInterval = sf::seconds(1.f);
+    float progress = 0.0f;
+    sf::RectangleShape progressHpBar;
+    sf::RectangleShape progressExpBar;
+    sf::RectangleShape progressHpBarBlack;
+    sf::RectangleShape progressExpBarBlack;
+
+    sf::View uiView = window.getDefaultView();
 
     void createBackground();
 
@@ -56,4 +62,16 @@ private:
     void renderGameObjects();
 
     sf::Vector2f normalize(const sf::Vector2f& vector);
+    
+    void updateHpProgressBar();
+
+    void initializeHpProgressBar();
+
+    void updateExpProgressBar();
+
+    void initializeExpProgressBar();
+
+    void updateExpProgressBarBlack();
+
+    
 };
