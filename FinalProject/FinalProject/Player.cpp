@@ -70,6 +70,17 @@ void Player::playSoundShot()
     }
 
     sound.setBuffer(ShotBuffer);
+    sound.setVolume(50);
 
     sound.play();
+}
+
+void Player::setHP(int damage) {
+    if(HP - damage <= 0)
+    {
+        HP = 0;
+    }else
+    {
+        HP -= damage;
+    }
 }

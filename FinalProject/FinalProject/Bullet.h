@@ -12,7 +12,7 @@ public:
 
     const sf::RectangleShape& getShape() const;
 
-    bool intersects(const sf::ConvexShape& enemyShape) const;
+    bool intersects(const sf::FloatRect& bounds) const;
 
     void playSoundShot();
     

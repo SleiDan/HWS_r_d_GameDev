@@ -23,7 +23,7 @@ public:
     float getExp() {return exp;}
 
     int getHP() {return HP;}
-    void setHP(int damage) { HP -= damage;}
+    void setHP(int damage);
 
     float getExpForNewLvl() {return expForNewLvl;}
     void setExpForNewLvl(float newExpForNewLvl) {expForNewLvl = newExpForNewLvl;}

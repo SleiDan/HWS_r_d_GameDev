@@ -2,9 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+constexpr float M_PI = 3.14159265358979323846f;
+
 
 Bullet::Bullet(const sf::Vector2f& position, float rotation)
     : shape(sf::Vector2f(10.f, 10.f)), speed(5.f) {
@@ -22,7 +21,7 @@ const sf::RectangleShape& Bullet::getShape() const {
     return shape;
 }
 
-bool Bullet::intersects(const sf::ConvexShape& enemyShape) const {
-    return shape.getGlobalBounds().intersects(enemyShape.getGlobalBounds());
+bool Bullet::intersects(const sf::FloatRect& bounds) const {
+    return shape.getGlobalBounds().intersects(bounds);
 }
 

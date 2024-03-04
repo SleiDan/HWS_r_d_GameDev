@@ -3,6 +3,9 @@
 #include <iostream>
 #include <random>
 
+#include "CircleEnemy.h"
+#include "TriangleEnemy.h"
+
 constexpr float M_PI = 3.14159265358979323846f;
 
 constexpr float xField = 3000.f;
@@ -24,7 +27,7 @@ float randomAngle() {
 
 // Constructor for the Game class
 Game::Game()
-    : window(sf::VideoMode::getFullscreenModes()[0], "SFML Shooting", sf::Style::Fullscreen),
+    : window(sf::VideoMode::getFullscreenModes()[0], "Geometry hater", sf::Style::Fullscreen),
       player(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 2.f)),
       fieldSize(sf::Vector2f(xField, yField)) {
     window.setFramerateLimit(60); // Set the framerate limit for smooth animation
@@ -43,7 +46,6 @@ Game::Game()
     pausedText.setFillColor(sf::Color::Black);
     pausedText.setStyle(sf::Text::Bold);
     pausedText.setOrigin(pausedText.getLocalBounds().width / 2.f, pausedText.getLocalBounds().height / 2.f);
-    pausedText.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
 
     gameOverText.setFont(font);
     gameOverText.setString("GameOver! Press R to restart");
@@ -51,8 +53,7 @@ Game::Game()
     gameOverText.setFillColor(sf::Color::Black);
     gameOverText.setStyle(sf::Text::Bold);
     gameOverText.setOrigin(gameOverText.getLocalBounds().width / 2.f, gameOverText.getLocalBounds().height / 2.f);
-    gameOverText.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-
+    
     hpText.setFont(font);
     hpText.setString(std::to_string(player.getHP()) + "/100");
     hpText.setCharacterSize(20);
@@ -68,6 +69,12 @@ Game::Game()
     expText.setStyle(sf::Text::Bold);
     expText.setOrigin(expText.getLocalBounds().width / 2.f, expText.getLocalBounds().height / 2.f);
     expText.setPosition(85, 180);
+
+    if (!bgMusicBuffer.loadFromFile("Sounds/bgMusic1.mp3")) {
+        std::cerr << "Could not load background music" << std::endl;
+    }
+    bgMusic.setBuffer(bgMusicBuffer);
+    bgMusic.setVolume(50);
     
     initializeHpProgressBar();
     initializeExpProgressBar();
@@ -76,12 +83,14 @@ Game::Game()
 // Main game loop
 void Game::run() {
     GameState gameState = GameState::Running;
-    while (window.isOpen()) {
-        sf::Time deltaTime = deltaClock.restart(); // Перезапустите таймер и сохраните дельту времени
-        float deltaSeconds = deltaTime.asSeconds(); // Преобразование в секунды
+    bgMusic.play();
 
-        update(deltaSeconds); // Обновите игру, передавая дельту времени
-        renderGameObjects(); // Render the game state
+    while (window.isOpen()) {
+        sf::Time deltaTime = deltaClock.restart();
+        float deltaSeconds = deltaTime.asSeconds();
+
+        update(deltaSeconds);
+        renderGameObjects();
     }
 }
 
@@ -154,7 +163,6 @@ void Game::handleUserInput() {
 }
 
 void Game::renderPausedText() {
-    window.setView(uiView);
     window.draw(pausedText);
 }
 
@@ -202,7 +210,20 @@ float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
     return std::sqrt(std::pow(pos2.x - pos1.x, 2) + std::pow(pos2.y - pos1.y, 2));
 }
 
+void Game::addEnemyBullet(const Bullet& bullet) {
+    bulletsEnemy.push_back(bullet);
+}
+
 void Game::updateGameLogic(float deltaSeconds) {
+    // После проверки на окончание музыки в функции update()
+    if (bgMusic.getStatus() == sf::Music::Stopped) {
+        currentMusicIndex = (currentMusicIndex + 1) % musicPaths.size(); // Переход к следующей песне в круговом порядке
+        if (!bgMusicBuffer.loadFromFile(musicPaths[currentMusicIndex])) {
+            std::cerr << "Could not load background music" << std::endl;
+        }
+        bgMusic.play(); // Начать воспроизведение новой песни
+    }
+
     // Handle player movement
     sf::Vector2f movement(0.f, 0.f);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -220,10 +241,26 @@ void Game::updateGameLogic(float deltaSeconds) {
     }
 
     // Move and rotate the player
-    const float speed = 50.f; // Assume 200 pixels per second
+    const float speed = 50.f; // Assume 50 pixels per second
     sf::Vector2f adjustedMovement = movement * speed * deltaSeconds; // Adjust movement
 
     player.move(adjustedMovement); // Move player with adjusted movement
+    
+    sf::Vector2f newPosition = player.getSprite().getPosition() + adjustedMovement;
+
+    if (newPosition.x < 0) {
+        newPosition.x = 0;
+    } else if (newPosition.x > fieldSize.x) {
+        newPosition.x = fieldSize.x;
+    }
+
+    if (newPosition.y < 0) {
+        newPosition.y = 0;
+    } else if (newPosition.y > fieldSize.y) {
+        newPosition.y = fieldSize.y;
+    }
+    
+    player.getSprite().setPosition(newPosition);
 
     // Rotate player to face the mouse cursor
     sf::Vector2f mousePositionInWorld = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -248,36 +285,36 @@ void Game::updateGameLogic(float deltaSeconds) {
     
     // Move enemies towards the player
     for (auto& enemy : enemies) {
-        enemy.move(player.getSprite().getPosition());
+        enemy->update(player.getSprite().getPosition(), deltaSeconds);
     }
 
     // Check for bullet-enemy collisions
     for (auto bulletIt = bullets.begin(); bulletIt != bullets.end(); ) {
         bool bulletHitEnemy = false; // Flag to track whether the bullet hit an enemy
         for (auto& enemy : enemies) {
-            if (bulletIt->intersects(enemy.getShape())) {
+            if (bulletIt->intersects(enemy->getShape().getGlobalBounds())) {
                 // Increment the hit count on the enemy
-                enemy.incrementHitCount();
-                bulletHitEnemy = true; // Set the flag to indicate bullet hit an enemy
-                if (enemy.getHitCount() >= 2) {
-                    // If the enemy is killed, add experience to the player
-                    player.addExp(enemy.getExpForKilling());
-                    updateExpProgressBar();
-                    if (player.getExp() >= player.getExpForNewLvl())
-                    {
-                        int newExp = player.getExp() - player.getExpForNewLvl();
-                        player.setExpForNewLvl(player.getExpForNewLvl() + 100);
-                        player.setExp(newExp);
-                        player.setAttackSpeed(0.2f);
+                    enemy->incrementHitCount();
+                    bulletHitEnemy = true; // Set the flag to indicate bullet hit an enemy
+                    if (enemy->getHitCount() >= 2) {
+                        // If the enemy is killed, add experience to the player
+                        player.addExp(enemy->getExpForKilling());
                         updateExpProgressBar();
-                        updateExpProgressBarBlack();
-                        
+                        if (player.getExp() >= player.getExpForNewLvl())
+                        {
+                            int newExp = player.getExp() - player.getExpForNewLvl();
+                            player.setExpForNewLvl(player.getExpForNewLvl() + 100);
+                            player.setExp(newExp);
+                            player.setAttackSpeed(0.2f);
+                            updateExpProgressBar();
+                            updateExpProgressBarBlack();
+                            
+                        }
+                        // Remove the enemy from the list here
+                        enemies.erase(std::remove(enemies.begin(), enemies.end(), enemy), enemies.end());
                     }
-                    // Remove the enemy from the list here
-                    enemies.erase(std::remove(enemies.begin(), enemies.end(), enemy), enemies.end());
+                    break; // Exit the loop as the bullet has hit an enemy
                 }
-                break; // Exit the loop as the bullet has hit an enemy
-            }
         }
 
         // If the bullet did not hit an enemy, move to the next bullet
@@ -288,21 +325,31 @@ void Game::updateGameLogic(float deltaSeconds) {
         }
     }
 
-    for (auto enemy : enemies)
+    for (auto& enemy : enemies)
     {
-        if (player.getSprite().getGlobalBounds().intersects(enemy.getShape().getGlobalBounds())) {
+        if (player.getSprite().getGlobalBounds().intersects(enemy->getShape().getGlobalBounds())) {
             timeSinceLastHit += hittingClock.restart();
             if(timeSinceLastHit >= hitInterval)
             {
-                player.setHP(enemy.getDamage());
+                player.setHP(enemy->getDamage());
                 timeSinceLastHit = sf::Time::Zero;
                 updateHpProgressBar();
             }
-            std::cout << player.getHP() << std::endl; 
             if(player.getHP() <= 0)
             {
+                updateHpProgressBar();
                 gameState = GameState::PlayerDead;
             }
+        }
+    }
+
+    for (auto it = bulletsEnemy.begin(); it != bulletsEnemy.end();) {
+        if (it->getShape().getGlobalBounds().intersects(player.getSprite().getGlobalBounds())) {
+            player.setHP(15);
+            updateHpProgressBar();
+            it = bulletsEnemy.erase(it);
+        } else {
+            ++it;
         }
     }
 
@@ -316,9 +363,9 @@ void Game::updateGameLogic(float deltaSeconds) {
         player.playSoundShot();
     }
 
+
     timeSinceLastSpawn += spawningClock.restart();
     
-    //Enemies
     if (timeSinceLastSpawn >= spawnEnemyInterval && enemies.size() < 10) {
         float radius = randomInRange(700.f, 1000.f);
         float angle = randomAngle();
@@ -326,12 +373,27 @@ void Game::updateGameLogic(float deltaSeconds) {
         float offsetY = radius * std::sin(angle);
 
         sf::Vector2f enemyPosition = player.getSprite().getPosition() + sf::Vector2f(offsetX, offsetY);
-        enemies.emplace_back(enemyPosition);
+    
+        // Generate a random number between 0 and 1
+        float chance = randomInRange(0.f, 1.f);
+
+        if (chance < 0.5f) {
+            // Spawn TriangleEnemy with 50% chance
+            enemies.push_back(std::make_unique<TriangleEnemy>(enemyPosition));
+        } else {
+            // Spawn CircleEnemy with 50% chance
+            enemies.push_back(std::make_unique<CircleEnemy>(enemyPosition, this));
+        }
+
         timeSinceLastSpawn = sf::Time::Zero;
     }
-
+    
     // Move bullets
     for (auto& bullet : bullets) {
+        bullet.move();
+    }
+
+    for (auto& bullet : bulletsEnemy) {
         bullet.move();
     }
 
@@ -351,6 +413,8 @@ void Game::updateGameLogic(float deltaSeconds) {
 
 // Function to update game logic
 void Game::update(float deltaSeconds) {
+    pausedText.setPosition(player.getSprite().getPosition());
+    gameOverText.setPosition(player.getSprite().getPosition());
 
     switch (gameState) {
     case GameState::Running:
@@ -367,8 +431,9 @@ void Game::update(float deltaSeconds) {
 
         break;
     case GameState::PlayerDead:
-        handlePlayerDeadInput();
         renderGameOverMessage();
+        handlePlayerDeadInput();
+        
 
         break;
 
@@ -387,9 +452,12 @@ void Game::renderGameObjects() {
     // Draw player, enemies, and bullets
     window.draw(player.getSprite());
     for (const auto& enemy : enemies) {
-        window.draw(enemy.getShape());
+        window.draw(enemy->getShape());
     }
     for (const auto& bullet : bullets) {
+        window.draw(bullet.getShape());
+    }
+    for (auto& bullet : bulletsEnemy) {
         window.draw(bullet.getShape());
     }
 
@@ -420,5 +488,3 @@ sf::Vector2f Game::normalize(const sf::Vector2f& vector) {
     float length = std::sqrt(vector.x * vector.x + vector.y * vector.y); // Calculate vector length
     return (length != 0.f) ? sf::Vector2f(vector.x / length, vector.y / length) : vector; // Normalize the vector if not zero
 }
-
-
