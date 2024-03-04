@@ -19,7 +19,7 @@ void TriangleEnemy::move(const sf::Vector2f& playerPosition) {
     if (length != 0.f) {
         direction /= length; // Normalize the direction vector
     }
-    float speed = 5.f; // Speed can be adjusted as needed
+    float speed = 3.f; // Speed can be adjusted as needed
     shape.move(direction * speed); // Move the enemy towards the player
 }
 

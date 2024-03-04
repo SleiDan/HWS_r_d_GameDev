@@ -29,7 +29,9 @@ float randomAngle() {
 Game::Game()
     : window(sf::VideoMode::getFullscreenModes()[0], "Geometry hater", sf::Style::Fullscreen),
       player(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 2.f)),
-      fieldSize(sf::Vector2f(xField, yField)) {
+      fieldSize(sf::Vector2f(xField, yField)),
+      mainMenu(window.getSize().x, window.getSize().y) // Ensure this line is correct
+{
     window.setFramerateLimit(60); // Set the framerate limit for smooth animation
     createBackground(); // Create the background grid
    
@@ -78,20 +80,24 @@ Game::Game()
     
     initializeHpProgressBar();
     initializeExpProgressBar();
+
 }
 
 // Main game loop
 void Game::run() {
-    GameState gameState = GameState::Running;
     bgMusic.play();
+    gameState = GameState::MainMenu;
 
+    window.clear();
+    
     while (window.isOpen()) {
         sf::Time deltaTime = deltaClock.restart();
         float deltaSeconds = deltaTime.asSeconds();
 
         update(deltaSeconds);
-        renderGameObjects();
+
     }
+    
 }
 
 void Game::updateHpProgressBar() {
@@ -185,16 +191,37 @@ void Game::handlePlayerDeadInput() {
     }
 }
 
+void Game::handlePlayerMenuInput()
+{
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        mainMenu.handleInput(event, window);
+    }
+
+    if (mainMenu.getGameStarted()) {
+        gameState = GameState::Running;
+        
+    } else {
+        mainMenu.draw(window);
+        window.display();
+    }
+}
+
 void Game::restartGame() {
     player.setHP(100);
+    player.setExp(0);
+    player.setExpForNewLvl(100);
+    updateHpProgressBar();
+    updateExpProgressBar();
     player.getSprite().setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
 
     enemies.clear();
     bullets.clear();
+    bulletsEnemy.clear();
 
     timeSinceLastShot = sf::Time::Zero;
     timeSinceLastSpawn = sf::Time::Zero;
-
+    
     gameState = GameState::Running;
 
     sf::Vector2f viewCenter(window.getSize().x / 2.f, window.getSize().y / 2.f);
@@ -330,7 +357,7 @@ void Game::updateGameLogic(float deltaSeconds) {
             timeSinceLastHit += hittingClock.restart();
             if(timeSinceLastHit >= hitInterval)
             {
-                player.setHP(enemy->getDamage());
+                player.Damage(enemy->getDamage());
                 timeSinceLastHit = sf::Time::Zero;
                 updateHpProgressBar();
             }
@@ -344,7 +371,7 @@ void Game::updateGameLogic(float deltaSeconds) {
 
     for (auto it = bulletsEnemy.begin(); it != bulletsEnemy.end();) {
         if (it->getShape().getGlobalBounds().intersects(player.getSprite().getGlobalBounds())) {
-            player.setHP(15);
+            player.Damage(15);
             updateHpProgressBar();
             it = bulletsEnemy.erase(it);
         } else {
@@ -407,33 +434,29 @@ void Game::updateGameLogic(float deltaSeconds) {
 
 }
 
-
-
-
 // Function to update game logic
 void Game::update(float deltaSeconds) {
     pausedText.setPosition(player.getSprite().getPosition());
     gameOverText.setPosition(player.getSprite().getPosition());
 
     switch (gameState) {
+    case GameState::MainMenu:
+        handlePlayerMenuInput();
+        break;
     case GameState::Running:
         handleUserInput();
         player.updateAnimation();
         updateGameLogic(deltaSeconds);
         renderGameObjects();
-
         break;
     case GameState::Paused:
         handleUserInput();
         renderGameObjects();
         renderPausedText();
-
         break;
     case GameState::PlayerDead:
         renderGameOverMessage();
         handlePlayerDeadInput();
-        
-
         break;
 
     }

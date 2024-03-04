@@ -75,7 +75,7 @@ void Player::playSoundShot()
     sound.play();
 }
 
-void Player::setHP(int damage) {
+void Player::Damage(int damage) {
     if(HP - damage <= 0)
     {
         HP = 0;

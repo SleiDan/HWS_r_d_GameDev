@@ -8,7 +8,10 @@
 #include "Enemy.h"
 #include <vector>
 
+#include "MainMenu.h"
+
 enum class GameState {
+    MainMenu,
     Running,
     Paused,
     PlayerDead
@@ -25,7 +28,9 @@ public:
 
 private:
     sf::RenderWindow window;
+    MainMenu mainMenu;
     Player player;
+    GameState gameState;
     std::vector<Bullet> bullets;
     std::vector<Bullet> bulletsEnemy;
     std::vector<std::unique_ptr<Enemy>> enemies;
@@ -40,7 +45,6 @@ private:
     sf::View view;
     sf::Time timeSinceLastSpawn = sf::Time::Zero;
     const sf::Time spawnEnemyInterval = sf::seconds(1.f);
-    GameState gameState = GameState::Running;
     sf::Font font;
     sf::Text pausedText;
     sf::Text gameOverText;
@@ -59,6 +63,7 @@ private:
     sf::Sound bgMusic;
     std::vector<std::string> musicPaths = {"Sounds/bgMusic1.mp3", "Sounds/bgMusic2.mp3", "Sounds/bgMusic3.mp3"};
     size_t currentMusicIndex = 0;
+    
 
 
     
@@ -66,6 +71,7 @@ private:
     void handleUserInput();
     void renderPausedText();
     void handlePlayerDeadInput();
+    void handlePlayerMenuInput();
     void restartGame();
     void renderGameOverMessage();
     void updateGameLogic(float deltaSeconds);

@@ -22,7 +22,7 @@ void CircleEnemy::move(const sf::Vector2f& playerPosition) {
         if (distance != 0.f) {
             direction /= distance; // Normalize the direction vector
         }
-        float speed = 3.f; // Slower speed compared to TriangleEnemy
+        float speed = 2.f; // Slower speed compared to TriangleEnemy
         shape.move(direction * speed); // Move the enemy towards the player
     }
 }
