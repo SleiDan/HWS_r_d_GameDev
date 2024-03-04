@@ -75,6 +75,7 @@ Game::Game()
     if (!bgMusicBuffer.loadFromFile("Sounds/bgMusic1.mp3")) {
         std::cerr << "Could not load background music" << std::endl;
     }
+    
     bgMusic.setBuffer(bgMusicBuffer);
     bgMusic.setVolume(50);
     
@@ -246,8 +247,12 @@ void Game::updateGameLogic(float deltaSeconds) {
         currentMusicIndex = (currentMusicIndex + 1) % musicPaths.size();
         if (!bgMusicBuffer.loadFromFile(musicPaths[currentMusicIndex])) {
             std::cerr << "Could not load background music" << std::endl;
+        }else
+        {
+            bgMusic.setBuffer(bgMusicBuffer);
+            bgMusic.setVolume(50);
+            bgMusic.play();
         }
-        bgMusic.play();
     }
 
     // Handle player movement
