@@ -2,6 +2,13 @@
 
 ## Geometry Hater
 
+### Pre-story
+Teller: "Once there was a boy who despised geometry. Endless hours spent studying shapes and formulas stole his joy and freedom. Determined to seek revenge on the very essence of his frustration, the boy plunged into a realm of geometric chaos. Armed only with fiery determination, a longing to break free from the shackles of geometric tyranny, and a... ahem, the Super Mega Neo-Sound Blaster 9000 of the next generation, complete with state-of-the-art soundwave technology..."
+
+Whispering to himself, 'Seriously?' He hesitated for a moment, contemplating the surrealness of their situation. With a cough to clear their throat, he forged ahead with their tale...
+
+"As he stood there in disbelief, questioning the reality of his newfound power, he realized that fate had chosen him for a remarkable journey. With incredulity in his eyes at this unexpected turn of events, he embarked on a mission to vanquish every shape that dared to stand in his way."
+
 ### Description:
 Geometry Hater is a fast-paced action game set in a geometric world filled with enemies. The game falls under the genre of arcade shooter.
 
