@@ -44,14 +44,14 @@ Game::Game()
     // Configure paused text
     pausedText.setFont(font);
     pausedText.setString("PAUSED");
-    pausedText.setCharacterSize(50);
+    pausedText.setCharacterSize(100);
     pausedText.setFillColor(sf::Color::Black);
     pausedText.setStyle(sf::Text::Bold);
     pausedText.setOrigin(pausedText.getLocalBounds().width / 2.f, pausedText.getLocalBounds().height / 2.f);
 
     gameOverText.setFont(font);
     gameOverText.setString("GameOver! Press R to restart");
-    gameOverText.setCharacterSize(50);
+    gameOverText.setCharacterSize(100);
     gameOverText.setFillColor(sf::Color::Black);
     gameOverText.setStyle(sf::Text::Bold);
     gameOverText.setOrigin(gameOverText.getLocalBounds().width / 2.f, gameOverText.getLocalBounds().height / 2.f);
@@ -171,9 +171,7 @@ void Game::handleUserInput() {
 
 void Game::renderPausedText() {
     sf::Vector2f viewCenter = view.getCenter();
-    sf::FloatRect textBounds = pausedText.getLocalBounds();
-    pausedText.setPosition(viewCenter.x - textBounds.width / 2, viewCenter.y - textBounds.height / 2);
-    window.draw(pausedText);
+    pausedText.setPosition(viewCenter.x, viewCenter.y );
 }
 
 void Game::handlePlayerDeadInput() {
@@ -235,9 +233,7 @@ void Game::restartGame() {
 
 void Game::renderGameOverMessage() {
     sf::Vector2f viewCenter = view.getCenter();
-    sf::FloatRect textBounds = gameOverText.getLocalBounds();
-    gameOverText.setPosition(viewCenter.x - textBounds.width / 2, viewCenter.y - textBounds.height / 2);
-    window.draw(gameOverText);
+    gameOverText.setPosition(viewCenter.x, viewCenter.y);
 }
 
 float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
@@ -460,12 +456,14 @@ void Game::update(float deltaSeconds) {
         break;
     case GameState::Paused:
         handleUserInput();
-        renderGameObjects();
         renderPausedText();
+        renderGameObjects();
         break;
     case GameState::PlayerDead:
         renderGameOverMessage();
+        renderGameObjects();
         handlePlayerDeadInput();
+
         break;
 
     }
@@ -494,6 +492,10 @@ void Game::renderGameObjects() {
 
     if (gameState == GameState::Paused) {
         window.draw(pausedText);
+    }
+
+    if (gameState == GameState::PlayerDead) {
+        window.draw(gameOverText);
     }
 
     
