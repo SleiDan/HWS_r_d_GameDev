@@ -340,8 +340,7 @@ void Game::updateGameLogic(float deltaSeconds) {
                             player.setExp(newExp);
                             player.setAttackSpeed(0.2f);
                             updateExpProgressBar();
-                            updateExpProgressBarBlack();
-                            
+                            updateExpProgressBarBlack();                          
                         }
                         // Remove the enemy from the list here
                         enemies.erase(std::remove(enemies.begin(), enemies.end(), enemy), enemies.end());
@@ -380,6 +379,10 @@ void Game::updateGameLogic(float deltaSeconds) {
         if (it->getShape().getGlobalBounds().intersects(player.getSprite().getGlobalBounds())) {
             player.Damage(15);
             updateHpProgressBar();
+            if(player.getHP() <= 0)
+            {
+                gameState = GameState::PlayerDead;
+            }
             it = bulletsEnemy.erase(it);
         } else {
             ++it;
